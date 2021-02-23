@@ -1,0 +1,35 @@
+import express from 'express';
+import cors from 'cors';
+import mongoose from 'mongoose';
+import path from 'path';
+
+import routes from './routes';
+
+class App {
+    public express: express.Application;
+
+    constructor () {
+      this.express = express();
+      this.middlewares();
+      this.database();
+      this.routes();
+    }
+
+    private middlewares (): void {
+      this.express.use(express.json());
+      this.express.use(cors());
+      this.express.use('/public', express.static(path.join(__dirname, 'controllers')));
+    }
+
+    private database (): void {
+      mongoose.connect('mongodb://localhost:27017/', {
+        useNewUrlParser: true
+      });
+    }
+
+    private routes (): void {
+      this.express.use(routes);
+    }
+}
+
+export default new App().express;
